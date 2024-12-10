@@ -82,6 +82,7 @@ export const createApprovalSlice: RootStateCreator<ApprovalStore> = (set, get) =
     })
 
     if (response.kind === "ok") {
+      await get().approval.getApprovalData()
       return true
     } else {
       get().approval.handleState(

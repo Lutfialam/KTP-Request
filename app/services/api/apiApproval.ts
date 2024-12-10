@@ -9,6 +9,9 @@ class ApiApproval extends Api {
     try {
       const response: ApiResponse<ApprovalData[]> = await this.apisauce.get(`api/list-permohonan`)
 
+      console.log("====================================")
+      console.log(response.data)
+      console.log("====================================")
       if (!response.ok) {
         const problem = getGeneralApiProblem(response)
         if (problem) return problem

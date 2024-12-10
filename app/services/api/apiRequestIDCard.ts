@@ -11,6 +11,7 @@ import {
   GetCreatedIDResponse,
 } from "."
 import { ApprovalData } from "@/store/types"
+import { format } from "date-fns"
 
 class ApiRequestIDCard extends Api {
   async getFamilyCard(number: string): GetFamilyCard {
@@ -43,9 +44,18 @@ class ApiRequestIDCard extends Api {
 
   async createIDCard(data: CreateIDCardRequest): PostCreateIDCardResponse {
     try {
+      const responseReq = await this.apisauce.post(
+        "api/permohonan",
+        JSON.stringify({
+          NamaWarga: data.namaLengkap,
+          AlamatWarga: data.alamat,
+          NoKK: data.kk,
+          TglPengajuan: format(new Date(), "yyyy-MM-dd"),
+        }),
+      )
       const response: ApiResponse<CreateIDCardResponse> = await this.apisauce.post(
         `api/ktp`,
-        JSON.stringify(data),
+        JSON.stringify({ ...data, reqID: responseReq.data?.id }),
       )
 
       if (!response.ok) {

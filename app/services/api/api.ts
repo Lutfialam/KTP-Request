@@ -36,6 +36,9 @@ export class Api {
 
     this.apisauce.addAsyncRequestTransform(async (request) => {
       if (request.headers && (storage.getString("accessToken")?.length ?? 0) > 0) {
+        console.log("====================================")
+        console.log("token: ", storage.getString("accessToken"))
+        console.log("====================================")
         request.headers.Authorization = storage.getString("accessToken")
       }
     })
@@ -64,10 +67,6 @@ export class Api {
         `register`,
         JSON.stringify({ name, email, password }),
       )
-
-      console.log("====================================")
-      console.log(response)
-      console.log("====================================")
 
       if (!response.ok) {
         const problem = getGeneralApiProblem(response)

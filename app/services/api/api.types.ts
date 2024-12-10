@@ -78,6 +78,7 @@ export interface CreateIDCardRequest {
   statusPerkawinan: string
   email: string
   placeCode: string
+  kk: string
 }
 
 export interface CreateIDCardResponse {

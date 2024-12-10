@@ -1,3 +1,6 @@
+import Loader from "@/components/Loader"
+
+import { useState } from "react"
 import { router } from "expo-router"
 import { useAuthenticationStore } from "@/store"
 import { $styles, colors, spacing } from "@/theme"
@@ -6,12 +9,19 @@ import { Button, Screen, Text, TextField } from "@/components"
 
 export default function Register() {
   const auth = useAuthenticationStore()
+  const [isLoading, setIsLoading] = useState(false)
 
   async function register() {
-    if (await auth.register()) {
+    setIsLoading(true)
+    const isSuccess = await auth.register()
+    setIsLoading(false)
+
+    if (isSuccess) {
       router.replace("/")
     }
   }
+
+  if (isLoading) return <Loader />
 
   return (
     <Screen

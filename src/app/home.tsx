@@ -1,10 +1,10 @@
 import { Image } from "expo-image"
 import { router } from "expo-router"
 import { storage } from "@/utils/storage"
-import { useApprovalStore, useAuthenticationStore } from "@/store"
 import { useEffect, useState } from "react"
 import { $styles, colors, spacing } from "@/theme"
 import { ListView, Screen, Text, TextField } from "@/components"
+import { useApprovalStore, useAuthenticationStore } from "@/store"
 import { Dimensions, ImageStyle, TextStyle, View, ViewStyle } from "react-native"
 
 import AntDesign from "@expo/vector-icons/AntDesign"
@@ -15,7 +15,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons"
 
 export default function Home() {
   const { role, name } = useAuthenticationStore()
-  const { list, handleState, searchQuery, getCreatedIDData } = useApprovalStore()
+  const { list, handleState, searchQuery, getCreatedIDData, getApprovalData } = useApprovalStore()
 
   const [isLoading, setIsLoading] = useState(false)
   const [shouldConfirmationShow, setShouldConfirmationShow] = useState(false)
@@ -26,9 +26,15 @@ export default function Home() {
 
   useEffect(() => {
     ;(async () => {
-      setIsLoading(true)
-      await getCreatedIDData()
-      setIsLoading(false)
+      if (role === "user") {
+        setIsLoading(true)
+        await getCreatedIDData()
+        setIsLoading(false)
+      } else {
+        setIsLoading(true)
+        await getApprovalData()
+        setIsLoading(false)
+      }
     })()
   }, [])
 
@@ -53,7 +59,7 @@ export default function Home() {
               <Text
                 size="lg"
                 weight="bold"
-                text={`Hello ${name ?? "user"}!`}
+                text={`Hello ${name || "user"}!`}
                 color={colors.palette.neutral480}
               />
               <Text text="Welcome to ID Digitalization App" color={colors.palette.neutral450} />
@@ -198,6 +204,7 @@ export default function Home() {
         isVisible={shouldConfirmationShow}
         onClose={setShouldConfirmationShow}
         onContinue={() => {
+          handleState("list", [])
           storage.clearAll()
           router.replace("/")
         }}
