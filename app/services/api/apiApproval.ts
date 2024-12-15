@@ -1,17 +1,28 @@
-import { ApprovalData } from "@/store/types"
 import { Api } from "./api"
-import { getGeneralApiProblem } from "./apiProblem"
 import { ApiResponse } from "apisauce"
-import { GetApprovalResponse } from "."
+import { ApprovalData } from "@/store/types"
+import { getGeneralApiProblem } from "./apiProblem"
+import { ApprovalTrackerData, GetApprovalResponse, GetApprovalTrackerResult } from "."
 
 class ApiApproval extends Api {
   async getApprovalList(): GetApprovalResponse {
     try {
       const response: ApiResponse<ApprovalData[]> = await this.apisauce.get(`api/list-permohonan`)
 
-      console.log("====================================")
-      console.log(response.data)
-      console.log("====================================")
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+      return { kind: "ok", data: response.data ?? [] }
+    } catch (error) {
+      return { kind: "bad-data" }
+    }
+  }
+
+  async getApprovalTracker(): GetApprovalTrackerResult {
+    try {
+      const response: ApiResponse<ApprovalTrackerData[]> = await this.apisauce.get(`api/tracker`)
+
       if (!response.ok) {
         const problem = getGeneralApiProblem(response)
         if (problem) return problem

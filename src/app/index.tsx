@@ -47,7 +47,7 @@ export default function WelcomeScreen() {
           name="password"
           value={auth.password}
           placeholder="Password"
-          keyboardType="visible-password"
+          secureTextEntry={true}
           onTextChange={auth.handleState}
           placeholderTextColor={colors.palette.placeholder}
           status={auth.errorMessage?.length > 0 ? "error" : undefined}
@@ -65,7 +65,12 @@ export default function WelcomeScreen() {
         style={$forgotPassword}
         text="Forgot your password?"
       />
-      <Button text="SIGN IN" style={$submitButton} onPress={onLoginPress} />
+      <Button
+        text="SIGN IN"
+        style={$submitButton}
+        onPress={onLoginPress}
+        disabled={auth.email.length <= 0 || auth.password.length <= 0}
+      />
 
       <Text weight="medium" align="center" text="don't have an account? " />
       <Text

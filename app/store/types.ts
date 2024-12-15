@@ -1,5 +1,6 @@
 import { StateCreator } from "zustand"
 import { RootStore } from "./RootStore"
+import { ApprovalStatus } from "./ApprovalStore"
 
 export type RootStateCreator<T> = StateCreator<RootStore, [], [], T>
 
@@ -10,7 +11,7 @@ export interface ApprovalData {
   alamatWarga: string
   noKk: string
   tglPengajuan: string
-  status: string
+  status: ApprovalStatus
   kk: Kk
 }
 
@@ -30,5 +31,5 @@ export interface ApprovalFormData {
   religion: string
   maritalStatus: string
   email: string
-  placeCode: string
+  placeCode?: string
 }

@@ -3,6 +3,7 @@ import type { ApiConfig, LoginResponse, PostLoginResponse } from "./api.types"
 import { ApiResponse, ApisauceInstance, create } from "apisauce"
 import { getGeneralApiProblem } from "./apiProblem"
 import { storage } from "@/utils/storage"
+import { router } from "expo-router"
 
 /**
  * Configuring the apisauce instance.
@@ -36,10 +37,14 @@ export class Api {
 
     this.apisauce.addAsyncRequestTransform(async (request) => {
       if (request.headers && (storage.getString("accessToken")?.length ?? 0) > 0) {
-        console.log("====================================")
-        console.log("token: ", storage.getString("accessToken"))
-        console.log("====================================")
         request.headers.Authorization = storage.getString("accessToken")
+      }
+    })
+
+    this.apisauce.addAsyncResponseTransform(async (response) => {
+      if (response.status === 401) {
+        storage.clearAll()
+        router.replace("/")
       }
     })
   }

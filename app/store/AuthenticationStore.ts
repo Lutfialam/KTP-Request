@@ -14,6 +14,7 @@ export interface AuthenticationStore {
   errorMessage: string
 
   // actions
+  clearState: () => void
   handleState: (
     key: keyof AuthenticationStore | string,
     value: AuthenticationStore[keyof AuthenticationStore],
@@ -32,6 +33,21 @@ export const createAuthenticationSlice: RootStateCreator<AuthenticationStore> = 
   errorMessage: "",
 
   // actions
+  clearState: () => {
+    set((state) => ({
+      ...state,
+      auth: {
+        ...state.auth,
+        name: "",
+        role: "",
+        email: "",
+        password: "",
+        errorMessage: "",
+        repeatedPassword: "",
+      },
+    }))
+  },
+
   handleState: (key, value) =>
     set((state) => ({ ...state, auth: { ...state.auth, [key]: value } })),
 
@@ -44,6 +60,9 @@ export const createAuthenticationSlice: RootStateCreator<AuthenticationStore> = 
       storage.set("email", get().auth.email)
       storage.set("role", response.data.role)
       storage.set("accessToken", response.data.token)
+
+      get().auth.handleState("email", "")
+      get().auth.handleState("password", "")
       return true
     } else if (response.kind === "unauthorized") {
       get().auth.handleState("errorMessage", "Email atau password salah")
@@ -55,12 +74,23 @@ export const createAuthenticationSlice: RootStateCreator<AuthenticationStore> = 
   },
 
   register: async (): Promise<boolean> => {
+    if (get().auth.password !== get().auth.repeatedPassword) {
+      get().auth.handleState("errorMessage", "Password tidak sama")
+      return false
+    }
+
     const response = await api.register(get().auth.name, get().auth.email, get().auth.password)
 
     if (response.kind === "ok") {
+      get().auth.clearState()
       return true
-    } else if (response.kind === "unauthorized") {
+    }
+
+    if (response.kind === "unauthorized") {
       get().auth.handleState("errorMessage", "Data tidak sesuai")
+      return false
+    } else if (response.kind === "failed") {
+      get().auth.handleState("errorMessage", response.message)
       return false
     } else {
       get().auth.handleState("errorMessage", "Something went wrong, try again later")

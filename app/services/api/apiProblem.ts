@@ -37,6 +37,10 @@ export type GeneralApiProblem =
    * The data we received is not in the expected format.
    */
   | { kind: "bad-data" }
+  /**
+   * The data we received is failed or error.
+   */
+  | { kind: "failed"; message: string }
 
 /**
  * Attempts to get a common cause of problems from an api response.
@@ -44,6 +48,10 @@ export type GeneralApiProblem =
  * @param response The api response.
  */
 export function getGeneralApiProblem(response: ApiResponse<any>): GeneralApiProblem | null {
+  if (response.data?.error) {
+    return { kind: "failed", message: response.data?.error ?? "Something went wrong" }
+  }
+
   switch (response.problem) {
     case "CONNECTION_ERROR":
       return { kind: "cannot-connect", temporary: true }

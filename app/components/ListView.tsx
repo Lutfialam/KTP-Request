@@ -1,11 +1,17 @@
-import { ForwardedRef, forwardRef, PropsWithoutRef, ReactElement, RefObject } from "react"
-import { FlatList } from "react-native"
 import { isRTL } from "@/i18n"
+import { spacing } from "@/theme"
 import { FlashList, FlashListProps } from "@shopify/flash-list"
+import { Dimensions, FlatList, View, ViewStyle } from "react-native"
+import { ForwardedRef, forwardRef, PropsWithoutRef, ReactElement, RefObject } from "react"
+import SkeletonPlaceholder from "react-native-skeleton-placeholder"
 
 export type ListViewRef<T> = FlashList<T> | FlatList<T>
 
-export type ListViewProps<T> = PropsWithoutRef<FlashListProps<T>>
+export type ListViewProps<T> = PropsWithoutRef<FlashListProps<T>> & {
+  isLoading?: boolean
+  skeletonCount?: number
+  skeletonHeight?: number
+}
 
 /**
  * This is a Higher Order Component meant to ease the pain of using @shopify/flash-list
@@ -28,6 +34,19 @@ const ListViewComponent = forwardRef(
   <T,>(props: ListViewProps<T>, ref: ForwardedRef<ListViewRef<T>>) => {
     const ListComponentWrapper = isRTL ? FlatList : FlashList
 
+    if (props.isLoading) {
+      return Array.from(new Array(props.skeletonCount ?? 1)).map((_, key) => (
+        <View key={key} style={$container}>
+          <SkeletonPlaceholder key={key} borderRadius={12}>
+            <SkeletonPlaceholder.Item
+              marginTop={spacing.md}
+              height={props.skeletonHeight ?? 120}
+              width={Dimensions.get("window").width}
+            />
+          </SkeletonPlaceholder>
+        </View>
+      ))
+    }
     return <ListComponentWrapper {...props} ref={ref} />
   },
 )
@@ -39,3 +58,7 @@ export const ListView = ListViewComponent as <T>(
     ref?: RefObject<ListViewRef<T>>
   },
 ) => ReactElement
+
+const $container: ViewStyle = {
+  paddingHorizontal: spacing.md,
+}

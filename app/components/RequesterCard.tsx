@@ -5,6 +5,7 @@ import { TouchableOpacity, View, ViewStyle } from "react-native"
 
 import Ionicons from "@expo/vector-icons/Ionicons"
 import FontAwesome from "@expo/vector-icons/FontAwesome"
+import { maskedStatus } from "@/store"
 
 interface RequesterCardProps {
   item: ApprovalData
@@ -22,7 +23,7 @@ export default function RequesterCard({ item, onPress, containerStyle }: Request
 
         <View style={$approvalStatus}>
           <Ionicons name="timer-sharp" size={24} color={colors.palette.blue} />
-          <Text size="xs" weight="medium" text={item?.status} />
+          <Text size="xs" weight="medium" text={maskedStatus[item?.status]} />
         </View>
       </View>
 

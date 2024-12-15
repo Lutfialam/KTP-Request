@@ -1,7 +1,7 @@
 import { Image } from "expo-image"
 import { router } from "expo-router"
 import { storage } from "@/utils/storage"
-import { useEffect, useState } from "react"
+import { Fragment, useEffect, useState } from "react"
 import { $styles, colors, spacing } from "@/theme"
 import { ListView, Screen, Text, TextField } from "@/components"
 import { useApprovalStore, useAuthenticationStore } from "@/store"
@@ -14,7 +14,7 @@ import SkeletonPlaceholder from "react-native-skeleton-placeholder"
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons"
 
 export default function Home() {
-  const { role, name } = useAuthenticationStore()
+  const { role, name, clearState } = useAuthenticationStore()
   const { list, handleState, searchQuery, getCreatedIDData, getApprovalData } = useApprovalStore()
 
   const [isLoading, setIsLoading] = useState(false)
@@ -54,7 +54,7 @@ export default function Home() {
             </SkeletonPlaceholder.Item>
           </SkeletonPlaceholder>
         ) : (
-          <>
+          <Fragment>
             <View style={$header}>
               <Text
                 size="lg"
@@ -73,7 +73,7 @@ export default function Home() {
                 setShouldConfirmationShow(true)
               }}
             />
-          </>
+          </Fragment>
         )}
       </View>
 
@@ -157,53 +157,28 @@ export default function Home() {
         </View>
       ) : null}
 
-      {isLoading ? (
-        <View style={$container}>
-          <SkeletonPlaceholder borderRadius={12}>
-            <SkeletonPlaceholder.Item
-              height={120}
-              marginTop={spacing.md}
-              width={Dimensions.get("window").width}
-            />
-          </SkeletonPlaceholder>
-
-          <SkeletonPlaceholder borderRadius={12}>
-            <SkeletonPlaceholder.Item
-              height={120}
-              marginTop={spacing.md}
-              width={Dimensions.get("window").width}
-            />
-          </SkeletonPlaceholder>
-
-          <SkeletonPlaceholder borderRadius={12}>
-            <SkeletonPlaceholder.Item
-              height={120}
-              marginTop={spacing.md}
-              width={Dimensions.get("window").width}
-            />
-          </SkeletonPlaceholder>
-        </View>
-      ) : (
-        <ListView
-          data={approvalList}
-          estimatedItemSize={120}
-          contentContainerStyle={$container}
-          renderItem={({ item }) => (
-            <RequesterCard
-              item={item}
-              onPress={() => {
-                handleState("selectedList", item)
-                router.navigate(`/approval/${item.id}`)
-              }}
-            />
-          )}
-        />
-      )}
+      <ListView
+        skeletonCount={4}
+        data={approvalList}
+        isLoading={isLoading}
+        estimatedItemSize={120}
+        contentContainerStyle={$container}
+        renderItem={({ item }) => (
+          <RequesterCard
+            item={item}
+            onPress={() => {
+              handleState("selectedList", item)
+              router.navigate(`/approval/${item.id}`)
+            }}
+          />
+        )}
+      />
 
       <LogoutConfirmation
         isVisible={shouldConfirmationShow}
         onClose={setShouldConfirmationShow}
         onContinue={() => {
+          clearState()
           handleState("list", [])
           storage.clearAll()
           router.replace("/")

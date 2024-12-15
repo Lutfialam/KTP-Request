@@ -21,6 +21,11 @@ export default function Register() {
     }
   }
 
+  function shouldSubmitButtonEnabled() {
+    const requiredField: (keyof typeof auth)[] = ["name", "email", "password", "repeatedPassword"]
+    return requiredField.every((item) => (auth[item] as string)?.length > 0)
+  }
+
   if (isLoading) return <Loader />
 
   return (
@@ -46,6 +51,7 @@ export default function Register() {
           placeholder="Name"
           onTextChange={auth.handleState}
           placeholderTextColor={colors.palette.placeholder}
+          status={auth.errorMessage?.length > 0 ? "error" : undefined}
         />
         <TextField
           name="email"
@@ -54,26 +60,38 @@ export default function Register() {
           keyboardType="email-address"
           onTextChange={auth.handleState}
           placeholderTextColor={colors.palette.placeholder}
+          status={auth.errorMessage?.length > 0 ? "error" : undefined}
         />
         <TextField
           name="password"
           value={auth.password}
           placeholder="Password"
-          keyboardType="visible-password"
+          secureTextEntry={true}
           onTextChange={auth.handleState}
           placeholderTextColor={colors.palette.placeholder}
+          status={auth.errorMessage?.length > 0 ? "error" : undefined}
         />
         <TextField
+          secureTextEntry
           name="repeatedPassword"
           value={auth.repeatedPassword}
           placeholder="Repeat Password"
-          keyboardType="visible-password"
           onTextChange={auth.handleState}
           placeholderTextColor={colors.palette.placeholder}
+          status={auth.errorMessage?.length > 0 ? "error" : undefined}
         />
       </View>
 
-      <Button text="SIGN UP" style={$submitButton} onPress={register} />
+      {auth.errorMessage.length > 0 ? (
+        <Text size="xxs" color={colors.palette.angry500} text={auth.errorMessage} />
+      ) : null}
+
+      <Button
+        text="SIGN UP"
+        onPress={register}
+        style={$submitButton}
+        disabled={!shouldSubmitButtonEnabled()}
+      />
 
       <Text weight="medium" align="center" text="have an account? " />
       <Text
@@ -83,6 +101,7 @@ export default function Register() {
         decoration="underline"
         color={colors.palette.blue}
         onPress={() => {
+          auth.handleState("errorMessage", "")
           router.replace("/")
         }}
       />

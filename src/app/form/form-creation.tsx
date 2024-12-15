@@ -9,16 +9,19 @@ import { Button, Screen, Text, TextField } from "@/components"
 import { TouchableOpacity, View, ViewStyle } from "react-native"
 
 import Loader from "@/components/Loader"
-import AntDesign from "@expo/vector-icons/AntDesign"
 import DatePicker from "react-native-date-picker"
+import AntDesign from "@expo/vector-icons/AntDesign"
 
 export default function FormCreation() {
   const { formData, isLoading, handleState, createIDCard } = useApprovalStore()
-
   const [shouldDatePickerShow, setShouldDatePickerShow] = useState(false)
 
   function onFormDataChange(key: keyof typeof formData | string, value: string) {
     handleState("formData", { ...formData, [key]: value })
+  }
+
+  function shouldSubmitButtonEnabled() {
+    return Object.values(formData).every((item) => item.length > 0)
   }
 
   async function onSubmitCreation() {
@@ -150,7 +153,12 @@ export default function FormCreation() {
           placeholderTextColor={colors.palette.placeholder}
         />
 
-        <Button text="Lanjut" style={$continueButton} onPress={onSubmitCreation} />
+        <Button
+          text="Lanjut"
+          style={$continueButton}
+          onPress={onSubmitCreation}
+          disabled={!shouldSubmitButtonEnabled()}
+        />
       </View>
     </Screen>
   )

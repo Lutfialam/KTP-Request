@@ -1,19 +1,22 @@
 import { Text } from "./Text"
-import { Image, ImageStyle, View, ViewStyle } from "react-native"
 import { ListView } from "./ListView"
 import { $styles, colors, spacing } from "@/theme"
+import { ApprovalTrackerData } from "@/services/api"
+import { Image, ImageStyle, View, ViewStyle } from "react-native"
+import { maskedStatus } from "@/store"
+import { format } from "date-fns"
 
-export interface TimelineProps<T> {
-  data: T[]
+export interface TimelineProps {
+  data: ApprovalTrackerData[]
 }
 
-export default function Timeline<T>({ data }: TimelineProps<T>) {
+export default function Timeline({ data }: TimelineProps) {
   return (
     <View style={$styles.flex1}>
       <ListView
         data={data}
         estimatedItemSize={120}
-        renderItem={({ index }) => (
+        renderItem={({ item, index }) => (
           <View style={$container}>
             <View style={$lineContainer}>
               <View style={$dot} />
@@ -25,20 +28,23 @@ export default function Timeline<T>({ data }: TimelineProps<T>) {
                 <Text
                   size="xxs"
                   weight="semiBold"
-                  text="Waiting Approval"
                   color={colors.palette.blue}
+                  text={maskedStatus[item.status]}
                 />
                 <Text
                   size="xxs"
                   weight="medium"
-                  text="July 04, 2022"
+                  text={format(
+                    new Date(`${item.updatedAt.split(" ")[0]} ${item.updatedAt.split(" ")[1]}`),
+                    "dd MMMM yyyy - hh:mm",
+                  )}
                   color={colors.palette.neutral450}
                 />
               </View>
 
               <View style={$approverContainer}>
                 <Image source={{ uri: "https://i.pravatar.cc/300" }} style={$avatar} />
-                <Text size="xxs" weight="semiBold" text="Pak RT" />
+                <Text size="xxs" weight="semiBold" text={item.picName} />
               </View>
             </View>
           </View>

@@ -1,9 +1,9 @@
 import LottieView from "lottie-react-native"
 
+import { Text } from "./Text"
 import { colors, spacing } from "@/theme"
 import { Image, ImageStyle } from "expo-image"
 import { View, ViewStyle } from "react-native"
-import { Text } from "./Text"
 
 export default function Loader() {
   return (

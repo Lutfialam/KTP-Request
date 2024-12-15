@@ -1,5 +1,7 @@
 import { ApprovalData } from "@/store/types"
 import { GeneralApiProblem } from "./apiProblem"
+import { ApiResponse } from "apisauce"
+import { ApprovalStatus } from "@/store"
 
 /**
  * These types indicate the shape of the data you expect to receive from your
@@ -69,6 +71,22 @@ export interface FamilyCardResponse {
 }
 export type GetFamilyCard = Promise<{ kind: "ok"; data: FamilyCardResponse } | GeneralApiProblem>
 
+export type RequestIDCardCreationResponse = ApiResponse<{
+  id: number
+  email: string
+  namaWarga: string
+  alamatWarga: string
+  noKk: string
+  tglPengajuan: string
+  status: string
+  kk: {
+    noKk: string
+    namaKk: string
+    alamat: string
+    anggotaKk: string
+  }
+}>
+
 export interface CreateIDCardRequest {
   namaLengkap: string
   tanggalLahir: string
@@ -90,4 +108,34 @@ export interface CreateIDCardResponse {
 }
 export type PostCreateIDCardResponse = Promise<
   { kind: "ok"; data: CreateIDCardResponse } | GeneralApiProblem
+>
+
+export interface ApprovalTrackerData {
+  id: number
+  requestId: number
+  status: ApprovalStatus
+  role: string
+  picName: string
+  updatedAt: string
+  remarks: string
+  sequence: number
+}
+
+export type GetApprovalTrackerResult = Promise<
+  { kind: "ok"; data: ApprovalTrackerData[] } | GeneralApiProblem
+>
+
+export interface GetIDCardResponse {
+  nik: string
+  namaLengkap: string
+  tanggalLahir: string
+  alamat: string
+  jenisKelamin: string
+  agama: string
+  statusPerkawinan: string
+  email: string
+}
+
+export type GetIDCardResponseResult = Promise<
+  { kind: "ok"; data: GetIDCardResponse } | GeneralApiProblem
 >
